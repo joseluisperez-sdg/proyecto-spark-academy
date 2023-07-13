@@ -1,0 +1,1 @@
+_package_name_ = "metadata_framework"
