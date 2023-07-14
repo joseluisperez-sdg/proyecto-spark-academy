@@ -1,6 +1,7 @@
 from pyspark.sql import SparkSession
 from multiprocessing.pool import ThreadPool
 import argparse
+import traceback
 
 from metadata_framework.entities.generate import generate_dataflows
 from metadata_framework.core.extract_service import ExtractService
@@ -34,6 +35,7 @@ def etl(params):
         return 1
     except Exception as error:
         print(f"Dataflow {dataflow_id} has an error: {error}")
+        print(traceback.format_exc())
         return 0
 
 

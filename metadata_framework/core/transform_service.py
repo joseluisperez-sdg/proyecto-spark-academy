@@ -50,12 +50,8 @@ class TransformService:
                 data_container_input.df_error = data_container_input.df_ok.filter(size(col("arraycoderrorbyfield")) > 0).select(*input_df_cols, current_timestamp().alias("dt"), "arraycoderrorbyfield")
                 data_container_input.df_ok = data_container_input.df_ok.filter(size(col("arraycoderrorbyfield")) == 0).drop("arraycoderrorbyfield")
 
-                id = index[input]
-                data_container_input.name = f"validation_ok_{id}"
-                data_container_input.error_name = f"validation_ko_{id}"
-
-                index[data_container_input.name] = id
-                index.pop(input)
+                data_container_input.status_name = f"validation_ok"
+                data_container_input.error_name = f"validation_ko"
 
         self._logger.info_finish()
 
@@ -63,28 +59,26 @@ class TransformService:
 
         self._logger.info_start()
 
-        for data_container_input in data_containers:
-            if "validation_ok" in data_container_input.name:
-                id = index[data_container_input.name]
-                validation_name = data_container_input.name
+        for transformation in transformations:
+            input = transformation.input
+            if input not in index.keys(): raise Exception(f"{input} not found in data_containers index: {index}")
 
-                for transformation in transformations:
-                    if transformation.type != "validate_fields":
-                        function_key = list(transformation.params.keys())[0]
-                        for function_params in transformation.params[function_key]:
-                            if "fields" in function_params.keys():
-                                additional = function_params["additional"] if "additional" in function_params else None
-                                function = function_params["function"]
-                                if function_params["function"] not in self._transformation_catalog.keys(): assert Exception(f"Function {function} is not in the catalog, please add it")
-                                catalog_function = self._process_fields(self._transformation_catalog[function], function_params["fields"], additional)
-                            else:
-                                catalog_function = self._transformation_catalog[function_params["function"]]
-                            data_container_input.df_ok = data_container_input.df_ok.select("*", expr(catalog_function).alias(function_params["name"]))
+            data_container_input = data_containers[index[input]]
+            if not "validation_ok" in data_container_input.status_name: continue
 
-                        data_container_input.name = transformation.name
+            if transformation.type != "validate_fields":
+                function_key = list(transformation.params.keys())[0]
+                for function_params in transformation.params[function_key]:
+                    if "fields" in function_params.keys():
+                        additional = function_params["additional"] if "additional" in function_params else None
+                        function = function_params["function"]
+                        if function_params["function"] not in self._transformation_catalog.keys(): assert Exception(f"Function {function} is not in the catalog, please add it")
+                        catalog_function = self._process_fields(self._transformation_catalog[function], function_params["fields"], additional)
+                    else:
+                        catalog_function = self._transformation_catalog[function_params["function"]]
+                    data_container_input.df_ok = data_container_input.df_ok.select("*", expr(catalog_function).alias(function_params["name"]))
 
-                index[data_container_input.original_name] = id
-                index.pop(validation_name)
+                data_container_input.status_name = transformation.name
 
         self._logger.info_finish()
 

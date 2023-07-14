@@ -1,2 +1,0 @@
-{"age":39,"name":"Xabier","office":"","dt":"2023-07-13T15:36:53.056+02:00","arraycoderrorbyfield":["office: error validation notEmpty"]}
-{"age":null,"name":"Miguel","office":"RIO","dt":"2023-07-13T15:36:53.056+02:00","arraycoderrorbyfield":["age: error validation notNull"]}

@@ -17,7 +17,11 @@ class LoadService:
                 if sink.input not in index_containers.keys(): raise Exception(f"{sink.name} require {sink.input} container, not found in index: {index_containers}")
                 df_to_save = data_containers[index_containers[sink.input]].df_ok
                 for path in sink.paths:
-                    df_to_save.coalesce(1).write.format(sink.file_format).option("ignoreNullFields", False) \
+                    if sink.options is not None:
+                        df_to_save.coalesce(1).write.format(sink.file_format).options(**sink.options) \
+                        .mode(sink.save_mode).save(path + "tmp")
+                    else:
+                        df_to_save.coalesce(1).write.format(sink.file_format) \
                         .mode(sink.save_mode).save(path + "tmp")
 
                     part_filename = next(entry for entry in os.listdir(path + "tmp") if entry.startswith('part-'))
@@ -36,8 +40,12 @@ class LoadService:
 
         for i, data_container in enumerate(data_containers):
             if data_container.df_error is not None:
-                data_container.df_error.coalesce(1).write.format(error_sink.file_format).option("ignoreNullFields", False) \
+                if error_sink.options is not None:
+                    data_container.df_error.coalesce(1).write.format(error_sink.file_format).options(**error_sink.options) \
                     .mode(error_sink.save_mode).save(error_sink.paths[i] + "tmp")
+                else:
+                    data_container.df_error.coalesce(1).write.format(error_sink.file_format)\
+                        .mode(error_sink.save_mode).save(error_sink.paths[i] + "tmp")
 
                 part_filename = next(entry for entry in os.listdir(error_sink.paths[i] + "tmp") if entry.startswith('part-'))
                 temporary_json = os.path.join(error_sink.paths[i] + "tmp", part_filename)

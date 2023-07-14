@@ -49,9 +49,9 @@ El fichero de metadatos se debe incluir en la ruta data/metadata.json
 
 
 ````
-- **core**: Módulo con el código principal de la ETL. En **transform_services.py** se encuentra el **transformation_catalog**.
-- **entities**: Clases que representan las entidades del fichero de metadatos.
-- **log**: Módulo de log.
+- **core**: módulo con el código principal de la ETL. En **transform_services.py** se encuentra el **transformation_catalog**.
+- **entities**: clases que representan las entidades del fichero de metadatos.
+- **log**: módulo de log.
 ## 3. Configuración del fichero de metadatos
 
 En un fichero de metadatos JSON pueden ir incluidos diferentes **dataflows**. Cada dataflow debe incluir los campos:
@@ -74,6 +74,7 @@ Un ejemplo del cuerpo de sources es:
 - **name**: nombre del source.
 - **path**: ruta del archivo de entrada.
 - **format**: formato del archivo de entrada.
+- **options**: opciones de lectura (opcional).
 
 ### 3.2 Transformations
 
@@ -124,7 +125,10 @@ Un ejemplo del cuerpo de sinks es:
                 "data/output/events/person/"
                     ],
             "format": "JSON",
-            "saveMode": "OVERWRITE"
+            "saveMode": "OVERWRITE",
+            "options": {
+                "ignoreNullFields": false
+                       }
             },
             {
             "input": "validation_ko",
@@ -133,7 +137,10 @@ Un ejemplo del cuerpo de sinks es:
                 "data/output/discards/person/"
                     ],
             "format": "JSON",
-            "saveMode": "OVERWRITE"
+            "saveMode": "OVERWRITE",
+            "options": {
+                "ignoreNullFields": false
+                       }
         }]
 ```
 - **input**: nombre original del data source.
@@ -141,6 +148,7 @@ Un ejemplo del cuerpo de sinks es:
 - **paths**: rutas donde guardar los resultados.
 - **format**: formato del fichero de salida.
 - **saveMode**: modo de guardado.
+- **options**: opciones de escritura (opcional).
 
 Se debe crear un sink por cada source. Siempre debe existir un sink de error de validación. Las rutas de paths en el sink de error son las rutas de error de los sources con el mismo orden.
 

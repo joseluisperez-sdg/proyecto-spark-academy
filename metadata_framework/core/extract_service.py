@@ -8,7 +8,11 @@ class ExtractService:
         self._logger.info_start()
 
         for i, data_container in enumerate(data_containers):
-            data_container.df_ok = self._spark_session.read.format(data_container.file_format).load(data_container.path)
+            if data_container.options is not None:
+                data_container.df_ok = self._spark_session.read.format(data_container.file_format).options(**data_container.options).load(data_container.path)
+            else:
+                data_container.df_ok = self._spark_session.read.format(data_container.file_format).load(
+                    data_container.path)
             if "_corrupt_record" in data_container.df_ok.columns: raise Exception(f"Data source {i} has corrupted records")
 
         self._logger.info_finish()

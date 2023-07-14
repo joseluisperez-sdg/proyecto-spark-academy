@@ -26,7 +26,7 @@
 				"name": "ok_with_date",
 				"type": "add_fields",
 				"params": {
-					"input": "validation_ok",
+					"input": "person_inputs",
 					"addFields": [{
 						"name": "dt",
 						"function": "current_timestamp"
@@ -41,7 +41,10 @@
 					"data/output/events/person/"
 				],
 				"format": "JSON",
-				"saveMode": "OVERWRITE"
+				"saveMode": "OVERWRITE",
+				"options": {
+					"ignoreNullFields": false
+				}
 			},
 			{
 				"input": "validation_ko",
@@ -50,7 +53,10 @@
 					"data/output/discards/person/"
 				],
 				"format": "JSON",
-				"saveMode": "OVERWRITE"
+				"saveMode": "OVERWRITE",
+				"options": {
+					"ignoreNullFields": false
+				}
 			}
 		]
 	}]

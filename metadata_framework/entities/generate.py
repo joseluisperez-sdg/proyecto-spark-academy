@@ -8,7 +8,10 @@ import json
 def generate_data(source_info):
     required_keys = {'name', 'path', 'format'}
     if not required_keys.issubset(set(source_info.keys())): raise Exception(f"Mandatory keys in sources: {required_keys}")
-    return DataContainer(source_info["name"],source_info["path"],source_info["format"])
+    if "options" in source_info.keys():
+        return DataContainer(source_info["name"],source_info["path"],source_info["format"], source_info["options"])
+    else:
+        return DataContainer(source_info["name"], source_info["path"], source_info["format"])
 
 
 def generate_transformation(transformation_info):
@@ -20,7 +23,10 @@ def generate_transformation(transformation_info):
 def generate_sink(sink_info):
     required_keys = {"name", "input", "paths", "format", "saveMode"}
     if not required_keys.issubset(set(sink_info.keys())): raise Exception(f"Mandatory keys in sinks: {required_keys}")
-    return Sink(sink_info["name"],sink_info["input"],sink_info["paths"], sink_info["format"], sink_info["saveMode"])
+    if "options" in sink_info.keys():
+        return Sink(sink_info["name"],sink_info["input"],sink_info["paths"], sink_info["format"],sink_info["saveMode"],sink_info["options"])
+    else:
+        return Sink(sink_info["name"], sink_info["input"], sink_info["paths"], sink_info["format"],sink_info["saveMode"])
 
 
 def generate_dataflows(logger):
