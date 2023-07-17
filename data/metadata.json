@@ -30,6 +30,11 @@
 					"addFields": [{
 						"name": "dt",
 						"function": "current_timestamp"
+					},
+					{
+						"name": "concatenation",
+						"function": "concat",
+						"fields": ["office", "age"]
 					}]
 				}
 			}

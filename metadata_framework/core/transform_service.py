@@ -3,6 +3,33 @@ import re
 
 
 class TransformService:
+    """
+        Clase que representa el componente de Validación y Transformación de la ETL realizada.
+
+        Attributes
+        ----------
+        _spark_session : SparkSession
+            sesión de spark
+        _logger : LoggerAgent
+            objeto logger usado en el programa.
+        _transformation_catalog: dict
+            catálogo de transformaciones. La clave es el nombre con el que se identifica en los metadatos y el valor el codigo SQL a ejecutar.
+
+        Methods
+        -------
+        _process_fields(self, transform_expression, fields, additional = None):
+            procesa el código SQL a ejecutar cambiando los marcadores genéricos por los campos necesarios.
+
+        perform_validations(self, data_containers, index, transformations):
+            ejecución de las validaciones proporcionadas en los metadatos. Se itera por las transformaciones y se llevan a acabo aquellas que son de tipo
+            "validate_fields". Si la validación es correcta, el campo arraycoderrorbyfield está vacío, en caso contrario se registran los errores.
+            Se guardan dos Dataframes en el DataContainer, el que contiene las filas que han pasado la valiadación (df_ok) y el que contiene las filas con
+            errores (df_error).
+
+        perform_functions(self, data_containers, index, transformations):
+             ejecución de las transformaciones proporcionadas en los metadatos. Se itera por las transformaciones y se llevan a acabo aquellas que no son de tipo
+            "validate_fields". Los resultados se guardan en df_ok.
+    """
 
     def __init__(self, spark_session, logger):
         self._spark_session = spark_session
@@ -14,6 +41,7 @@ class TransformService:
         }
 
     def _process_fields(self, transform_expression, fields, additional = None):
+        #FALTA DOCSTRING
 
         filled_expression = transform_expression
         if isinstance(fields, list):
@@ -28,6 +56,7 @@ class TransformService:
         return filled_expression
 
     def perform_validations(self, data_containers, index, transformations):
+        # FALTA DOCSTRING
 
         self._logger.info_start()
 
@@ -56,6 +85,7 @@ class TransformService:
         self._logger.info_finish()
 
     def perform_functions(self, data_containers, index, transformations):
+        # FALTA DOCSTRING
 
         self._logger.info_start()
 

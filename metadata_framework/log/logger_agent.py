@@ -1,4 +1,4 @@
-'''Module logger_agent implement the class LoggerAgent'''
+'''Módulo logger_agent implementa la clase LoggerAgent'''
 import inspect
 
 from pyspark.sql import SparkSession
@@ -7,45 +7,43 @@ from metadata_framework.log import log
 
 
 class LoggerAgent():
-    '''LoggerAgent: This class is the agent to managed the Logs'''
+    '''LoggerAgent: Esta clase es el agente que gestiona los Logs'''
 
     def __init__(self, spark_logger: log.Log4j):
         self.spark_logger = spark_logger
 
     @staticmethod
     def init_logger(spark_session: SparkSession):
-        '''Initialization of the LoggerAgent
-        path, filename, log_level are optional.
-        '''
+        '''Inicialización del LoggerAgent'''
         return LoggerAgent(log.Log4j(spark_session))
 
     def debug(self, message: str):
-        '''Method to log a standard message to the log with debug level'''
+        '''Método para registrar un mensaje estándar en el registro con nivel de depuración'''
         long_message = '%s said %s' % (inspect.stack()[1][3], message)
         self.spark_logger.debug(long_message)
 
     def info(self, message: str):
-        '''Method to log a standard message to the log with info level'''
+        '''Método para registrar un mensaje estándar en el registro con nivel info'''
         long_message = '%s said %s' % (inspect.stack()[1][3], message)
         self.spark_logger.info(long_message)
 
     def info_start(self, message: str = ''):
-        '''Method to log a standard message to the log with info start level'''
+        '''Método para registrar un mensaje estándar en el registro con información de inicio'''
         long_message = '%s start %s' % (inspect.stack()[1][3], message)
         self.spark_logger.info(long_message)
 
     def info_finish(self, message: str = ''):
-        '''Method to log a standard message to the log with info finish level'''
+        '''Método para registrar un mensaje estándar en el registro con información de finalización'''
         long_message = '%s finish %s' % (inspect.stack()[1][3], message)
         self.spark_logger.info(long_message)
 
     def warning(self, message: str):
-        '''Method to log a standard message to the log with warning level'''
+        '''Método para registrar un mensaje estándar en el registro con nivel de advertencia'''
         long_message = '%s said %s' % (inspect.stack()[1][3], message)
         self.spark_logger.warning(long_message)
 
     def error(self, message: str):
-        '''Method to log a standard message to the log with error level'''
+        '''Método para registrar un mensaje estándar en el registro con nivel de error'''
         long_message = '%s said %s' % (inspect.stack()[1][3], message)
         self.spark_logger.error(long_message)
 
@@ -53,7 +51,7 @@ class LoggerAgent():
         """critical method
 
         Args:
-            message (str): message to write on log4j
+            message (str): Mensaje para escribir en log4j
         """
         long_message = '%s said %s' % (inspect.stack()[1][3], message)
         self.spark_logger.critical(long_message)
@@ -62,7 +60,7 @@ class LoggerAgent():
         """exception method
 
         Args:
-            message (str): message to write on log4j
+            message (str): Mensaje para escribir en log4j
         """
         long_message = '%s said %s' % (inspect.stack()[1][3], message)
         self.spark_logger.exception(long_message)

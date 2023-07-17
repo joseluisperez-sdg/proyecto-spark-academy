@@ -3,12 +3,38 @@ import shutil
 
 
 class LoadService:
+    """
+        Clase que representa el componente de Carga de la ETL realizada.
+
+        Attributes
+        ----------
+        _spark_session : SparkSession
+            sesión de spark
+        _logger : LoggerAgent
+            objeto logger usado en el programa.
+
+        Methods
+        -------
+        load_correct(self, data_containers, sinks, index_containers):
+            para cada uno de los Sinks que no son de error se ejecuta la escritura con la información proporcionada.
+
+        load_errors(self, data_containers, sinks, index_containers):
+            escritura de los df_error con los datos proporcionados por el Sink de error.
+    """
 
     def __init__(self, spark_session, logger):
         self._spark_session = spark_session
         self._logger = logger
 
     def load_correct(self, data_containers, sinks, index_containers):
+        """
+            Para cada uno de los Sinks que no son de error se ejecuta la escritura con la información proporcionada.
+
+            Parameters:
+                data_containers (list[DataContainers]): DataContainers con los datos necesarios a guardar.
+                sinks (list[Sinks]): Sinks específicos del Dataflow.
+                index_containers (dict): índice de DataContainers.
+        """
 
         self._logger.info_start()
 
@@ -32,6 +58,14 @@ class LoadService:
         self._logger.info_finish()
 
     def load_errors(self, data_containers, sinks, index_sinks):
+        """
+            Escritura de los df_error con los datos proporcionados por el Sink de error.
+
+            Parameters:
+                data_containers (list[DataContainers]): DataContainers con los datos necesarios a guardar.
+                sinks (list[Sinks]): Sinks específicos del Dataflow.
+                index_sinks (dict): índice de Sinks.
+        """
 
         self._logger.info_start()
 

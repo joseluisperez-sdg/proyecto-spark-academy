@@ -6,6 +6,14 @@ import json
 
 
 def generate_data(source_info):
+    """
+        Función encargada de generar un objeto DataContainer a partir de la lectura del fichero de metadatos. Se asegura de que la información es completa.
+
+        Parameters:
+                source_info (dict): información de los ficheros fuente extraída de los metadatos.
+        Returns:
+                DataContainer (DataContainer): objeto DataContainer.
+    """
     required_keys = {'name', 'path', 'format'}
     if not required_keys.issubset(set(source_info.keys())): raise Exception(f"Mandatory keys in sources: {required_keys}")
     if "options" in source_info.keys():
@@ -15,12 +23,28 @@ def generate_data(source_info):
 
 
 def generate_transformation(transformation_info):
+    """
+        Función encargada de generar un objeto Transformation a partir de la lectura del fichero de metadatos. Se asegura de que la información es completa.
+
+        Parameters:
+                transformation_info (dict): información de las transformaciones extraída de los metadatos.
+        Returns:
+                Transformation (Transformation): objeto Transformation.
+    """
     required_keys = {"name", "type", "params"}
     if not required_keys.issubset(set(transformation_info.keys())): raise Exception(f"Mandatory keys in validations and transformations: {required_keys}")
     return Transformation(transformation_info["name"], transformation_info["type"], transformation_info["params"]["input"], transformation_info["params"])
 
 
 def generate_sink(sink_info):
+    """
+            Función encargada de generar un objeto Sink a partir de la lectura del fichero de metadatos. Se asegura de que la información es completa.
+
+            Parameters:
+                    sink_info (dict): información de las rutas de salida extraída de los metadatos.
+            Returns:
+                    Sink (Sink): objeto Sink.
+        """
     required_keys = {"name", "input", "paths", "format", "saveMode"}
     if not required_keys.issubset(set(sink_info.keys())): raise Exception(f"Mandatory keys in sinks: {required_keys}")
     if "options" in sink_info.keys():
@@ -30,6 +54,14 @@ def generate_sink(sink_info):
 
 
 def generate_dataflows(logger):
+    """
+        Función encargada de generar los objetos Dataflow a partir de la lectura del fichero de metadatos.
+
+        Parameters:
+                logger: instacia del objeto logger usado en la ejecución del programa.
+        Returns:
+                dataflows (list[Dataflows]): lista de objetos Dataflow generados.
+    """
     logger.info_start()
 
     metadata_path = 'data/metadata.json'

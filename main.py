@@ -12,6 +12,14 @@ from metadata_framework.log.logger_agent import LoggerAgent
 
 
 def etl(params):
+    """
+        Función encargada de ejecutar la ETL llamando a los métodos necesarios.
+
+        Parameters:
+                params (dict): Diccionario con información de la ETL
+        Returns:
+                status (int): Status de la ETL, 1 correcto, 0 error.
+    """
     dataflow_id = params["dataflow_id"]
     try:
         params["extractor"].extract_source(params["dataflow"].data_containers)
@@ -40,6 +48,14 @@ def etl(params):
 
 
 def parallelize(processes_data, n_processes):
+    """
+        Función encargada de paralelizar la ETL por dataflows.
+
+        Parameters:
+                processes_data (list[dict]): Lista de diccionarios con información de la ETL
+                n_processes (int): Número de procesos en paralelo
+    """
+
     pool = ThreadPool(n_processes)
     status = pool.map(etl, [process_data for process_data in processes_data])
     if all(status):
@@ -49,6 +65,9 @@ def parallelize(processes_data, n_processes):
 
 
 def main():
+    """
+        Ejecución principal del programa. Instanciación de la sesión de spark, log y objetos necesarios para llevar a cabo la ETL.
+    """
     parser = argparse.ArgumentParser()
     parser.add_argument("--n_processes", required=True)
     args = parser.parse_args()
