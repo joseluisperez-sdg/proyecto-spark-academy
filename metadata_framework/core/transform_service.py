@@ -41,7 +41,17 @@ class TransformService:
         }
 
     def _process_fields(self, transform_expression, fields, additional = None):
-        #FALTA DOCSTRING
+        """
+            Procesa el código SQL a ejecutar cambiando los marcadores genéricos por los campos necesarios.
+
+            Parameters:
+                transform_expression (str): código SQL
+                fields (list[str]): campos a procesar en la sentencia SQL
+                additional (str): campos adicionales
+            Returns:
+                filled_expression (str): sentencia SQL con los campos a utilizar procesados
+
+        """
 
         filled_expression = transform_expression
         if isinstance(fields, list):
@@ -56,7 +66,17 @@ class TransformService:
         return filled_expression
 
     def perform_validations(self, data_containers, index, transformations):
-        # FALTA DOCSTRING
+        """
+            Ejecución de las validaciones proporcionadas en los metadatos. Se itera por las transformaciones y se llevan a acabo aquellas que son de tipo
+            "validate_fields". Si la validación es correcta, el campo arraycoderrorbyfield está vacío, en caso contrario se registran los errores.
+            Se guardan dos Dataframes en el DataContainer, el que contiene las filas que han pasado la valiadación (df_ok) y el que contiene las filas con
+            errores (df_error).
+
+            Parameters:
+                data_containers (list[DataContainers]): contenedores donde se encuentran almacenados los datos
+                index (dict): indice clave-valor que como clave tiene el nombre del DataContainer y como valor su posición en la lista data_containers
+                transformations (list[Transformations]): lista de Transformations extraidas de los metadatos.
+        """
 
         self._logger.info_start()
 
@@ -71,7 +91,7 @@ class TransformService:
                 for validation in transformation.params["validations"]:
                     field = validation["field"]
                     for field_validation in validation["validations"]:
-                        if field_validation not in self._transformation_catalog.keys(): assert Exception(f"Validation {field_validation} is not in the catalog, please add it")
+                        if field_validation not in self._transformation_catalog.keys(): raise Exception(f"Validation {field_validation} is not in the catalog, please add it")
                         catalog_validation = self._process_fields(self._transformation_catalog[field_validation], field)
                         data_container_input.df_ok = data_container_input.df_ok.withColumn("arraycoderrorbyfield", when(expr(catalog_validation), col("arraycoderrorbyfield")).
                                                                                                otherwise(array_union(col("arraycoderrorbyfield"), array(lit(f"{field}: error validation {field_validation}")))))
@@ -85,7 +105,15 @@ class TransformService:
         self._logger.info_finish()
 
     def perform_functions(self, data_containers, index, transformations):
-        # FALTA DOCSTRING
+        """
+            Ejecución de las transformaciones proporcionadas en los metadatos. Se itera por las transformaciones y se llevan a acabo aquellas que no son de tipo
+            "validate_fields". Los resultados se guardan en df_ok.
+
+            Parameters:
+                data_containers (list[DataContainers]): contenedores donde se encuentran almacenados los datos
+                index (dict): indice clave-valor que como clave tiene el nombre del DataContainer y como valor su posición en la lista data_containers
+                transformations (list[Transformations]): lista de Transformations extraidas de los metadatos.
+        """
 
         self._logger.info_start()
 
@@ -99,10 +127,10 @@ class TransformService:
             if transformation.type != "validate_fields":
                 function_key = list(transformation.params.keys())[0]
                 for function_params in transformation.params[function_key]:
+                    function = function_params["function"]
+                    if function not in self._transformation_catalog.keys(): raise Exception(f"Function {function} is not in the catalog, please add it")
                     if "fields" in function_params.keys():
                         additional = function_params["additional"] if "additional" in function_params else None
-                        function = function_params["function"]
-                        if function_params["function"] not in self._transformation_catalog.keys(): assert Exception(f"Function {function} is not in the catalog, please add it")
                         catalog_function = self._process_fields(self._transformation_catalog[function], function_params["fields"], additional)
                     else:
                         catalog_function = self._transformation_catalog[function_params["function"]]
